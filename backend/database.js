@@ -1,6 +1,12 @@
+const {connect}=require("mongoose")
+
+require("dotenv").config();   // .env ko load karega
+
+mongoose.connect(process.env.MONGO_URL)  // yaha se password wala URL lega
+
 async function dbconnect(){
-    const url="mongodb+srv://MasumRaza89:Masumdatasecure23@masumraza.qjpiwch.mongodb.net/fullstack"
+    const url=""
     await connect(url);
 }
-module.exports=dbconnect
+module.exports=dbconnect;
 

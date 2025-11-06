@@ -1,5 +1,5 @@
 async function connectBackend(){
-    const res=await fetch("http://localhost:8888/about",{
+    const res=await fetch("http://localhost:8888/home",{
         method:"POST",
         headers:{
    "Content-Type":"application/json"
