@@ -1,14 +1,23 @@
 async function connectBackend(){
-    const res=await fetch("http://localhost:8888/home",{
+    try{
+    const res=await fetch("http://localhost:8888/adduser",{
         method:"POST",
         headers:{
    "Content-Type":"application/json"
-        }
-    })
-    
-    const data=await res.text();
-    console.log(data);
-    document.getElementById("output").innerText=data;
-}    
+        },
+        body:JSON.stringify({
+            firstname:"Khanh",
+            lastname:"Masum",
+            emailId:"masum125@gmail.com",
+            password:"khan@A124",
+            skills:["javascript","react","nodejs"],
+            age:29,
+        })
+    });
 
+}
+catch(err){
+    console.log("Error:",err)
+}
+}
 connectBackend();

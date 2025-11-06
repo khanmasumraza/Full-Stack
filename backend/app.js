@@ -1,7 +1,8 @@
 const express=require("express")
 const mongoose=require("mongoose")
 const userModel=require("./models/user")
-const dbconnect=require("./database")
+const validatorReq=require("../Frontend/validators/validator")
+require("./database")
 const app=express()
 
 // Use for connect frontend to backend
@@ -23,17 +24,14 @@ app.post("/contact",(req,res)=>{
     res.send("You get this data from contact")
 })
 
-app.post("/adduser",async(req,res)=>{
+app.post("/adduser",validatorReq,async(req,res)=>{
 try{
-    const data={
-        firstname:"khan",
-        lastname:"masum",
-        emailId:"khan1234@gmail.com",
-        password:"khanbro@12"
-    }
-    const user=await userModel(data)
-    await user.save();
+   const {firstname,lastname,emailId,password,skills,age}=req.body
 
+   const user=new userModel({
+    firstname,lastname,emailId,password,skills,age
+   })
+   await user.save();
     res.send("Data send succesfully")
 }
 catch(err){
@@ -41,14 +39,6 @@ catch(err){
 }
 })
 
-dbconnect()
-
-.then(()=>{
-    console.log("Database connection done")
-})
-.catch(err=>{
-    console.log("Database connection failed")
-})
 app.listen(8888,()=>{
     console.log("Server is running on 8888 port")
 })
