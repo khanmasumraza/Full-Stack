@@ -39,6 +39,10 @@ catch(err){
 }
 })
 
+app.get("/getuser",async(req,res)=>{
+    const find=await userModel.find({})
+    res.send(find)
+})
 app.listen(8888,()=>{
     console.log("Server is running on 8888 port")
 })
