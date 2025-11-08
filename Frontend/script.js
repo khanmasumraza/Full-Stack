@@ -6,11 +6,11 @@ async function connectBackend(){
    "Content-Type":"application/json"
         },
         body:JSON.stringify({
-            firstname:"khabib",
-            lastname:"nurmadaogo",
-            emailId:"khabib125@gmail.com",
-            password:"khbib@A124",
-            skills:["fighter","mma","wrestler"],
+            firstname:"roman",
+            lastname:"reings",
+            emailId:"roman125@gmail.com",
+            password:"roman@A124",
+            skills:["fighter","wwe","wrestler"],
             age:24,
         })
     });
@@ -21,9 +21,26 @@ catch(err){
 }
 }
 
+async function movieData(){
+    const movie= await fetch("http://localhost:8888/movie",{
+        method:"POST",
+        headers:{
+            "Content-type":"application/json"
+        },
+        body:JSON.stringify({
+title:"Bajrangi Bhaijaan",
+releaseDate:2015,
+actor:"Salman khan",
+heroine:"kareena kappor",
+budget:200000    ,    
+        })
+    })
+
+}
+
 async function getData(){
     try{
-    const user= await fetch("http://localhost:8888/getuser")
+    const user= await fetch("http://localhost:8888/movieList")
  const data=await user.json();
  console.log(data)
 
@@ -33,5 +50,7 @@ async function getData(){
         console.log("Error",err.message)
     }
 }
-getData();
+
 connectBackend();
+movieData();
+getData();

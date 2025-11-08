@@ -1,6 +1,7 @@
 const express=require("express")
 const mongoose=require("mongoose")
 const userModel=require("./models/user")
+const movieModel=require("./models/movie")
 const validatorReq=require("../Frontend/validators/validator")
 require("./database")
 const app=express()
@@ -26,13 +27,14 @@ app.post("/contact",(req,res)=>{
 
 app.post("/adduser",validatorReq,async(req,res)=>{
 try{
-   const {firstname,lastname,emailId,password,skills,age}=req.body
+   const {firstname,lastname,emailId,password,skills,age,}=req.body
 
    const user=new userModel({
     firstname,lastname,emailId,password,skills,age
    })
    await user.save();
-    res.send("Data send succesfully")
+    res.send(user)
+    console.log(user)
 }
 catch(err){
     res.status(400).send("data not add")
@@ -40,9 +42,32 @@ catch(err){
 })
 
 app.get("/getuser",async(req,res)=>{
-    const find=await userModel.find({})
+    const find=await userModel.findOne({emailId:"roman125@gmail.com"})
     res.send(find)
+    console.log(find)
 })
+
+app.post("/movie",async(req,res)=>{
+try{
+    const {title,releaseDate,actor,heroine,budget}=req.body;
+
+    const data= new movieModel({
+        title,releaseDate,actor,heroine,budget
+    })
+    await data.save();
+        res.send({message:"Movie data send succesfully"})
+}
+catch(err){
+    res.status(400).send("Error:"+ err.message)
+}
+})
+
+app.get("/movieList",async(req,res)=>{
+    const movie= await movieModel.find()
+    console.log(movie)
+    res.send(movie)
+})
+
 app.listen(8888,()=>{
     console.log("Server is running on 8888 port")
 })
