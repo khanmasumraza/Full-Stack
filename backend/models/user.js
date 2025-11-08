@@ -1,18 +1,33 @@
 const mongoose=require("mongoose")
+const validator=require("validator")
 
 const userSchema=new mongoose.Schema({
     firstname:{
         type:String,
         maxLength:8,
+        minLength:3
     },
     lastname:{
-        type:String
+        type:String,
+        minLength:3,
+        maxLength:7,
     },
     emailId:{
-        type:String
+        type:String,
+        uniqued:true,
+        validate(value){
+        if(!validator.isEmail(value)){
+            throw new Error("Email is invalid")
+        }
+    }
     },
     password:{
-        type:String
+        type:String,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Enter Strong password")
+            }
+        }
     },
     skills:{
         type:[String]

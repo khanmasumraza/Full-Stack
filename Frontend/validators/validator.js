@@ -3,7 +3,7 @@ const validatorReq=(req,res,next)=>{
 try{
     const {firstname,lastname,emailId,password}=req.body
 
-    if(!firstname.length>8){
+    if(firstname.length>8){
         throw new Error ("Name should be less than 5 chrac")
     }
 

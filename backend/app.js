@@ -37,12 +37,12 @@ try{
     console.log(user)
 }
 catch(err){
-    res.status(400).send("data not add")
+    res.status(400).json({error:err.message})
 }
 })
 
 app.get("/getuser",async(req,res)=>{
-    const find=await userModel.findOne({emailId:"roman125@gmail.com"})
+    const find=await userModel.find()
     res.send(find)
     console.log(find)
 })
@@ -55,7 +55,7 @@ try{
         title,releaseDate,actor,heroine,budget
     })
     await data.save();
-        res.send({message:"Movie data send succesfully"})
+        res.json({message:"Movie data send succesfully",data})
 }
 catch(err){
     res.status(400).send("Error:"+ err.message)

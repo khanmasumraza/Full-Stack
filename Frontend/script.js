@@ -6,22 +6,26 @@ async function connectBackend(){
    "Content-Type":"application/json"
         },
         body:JSON.stringify({
-            firstname:"roman",
-            lastname:"reings",
-            emailId:"roman125@gmail.com",
-            password:"roman@A124",
-            skills:["fighter","wwe","wrestler"],
+            firstname:"the",
+            lastname:"rock",
+            emailId:"therock124@gmail.com",
+            password:"therock@A124",
+            skills:["rich","hollywood","wwe"],
             age:24,
         })
     });
 
+  const user=await res.json()
+console.log("User response:",user);
+
 }
 catch(err){
-    console.log("Error:",err)
+    console.log("Error "+err.message)
 }
 }
 
 async function movieData(){
+    try{
     const movie= await fetch("http://localhost:8888/movie",{
         method:"POST",
         headers:{
@@ -34,23 +38,34 @@ actor:"Salman khan",
 heroine:"kareena kappor",
 budget:200000    ,    
         })
-    })
+    });
+
+   const data= await movie.json()
+   console.log("Movie response",data)
+}
+catch(err){
+  console.log("Error" +err.message)
+}
 
 }
 
 async function getData(){
     try{
-    const user= await fetch("http://localhost:8888/movieList")
+    const user= await fetch("http://localhost:8888/getuser")
  const data=await user.json();
  console.log(data)
 
  document.getElementById("data").innerText=JSON.stringify(data,null,2)
     }
     catch(err){
-        console.log("Error",err.message)
+        console.log("Error"+ err.message)
     }
 }
 
-connectBackend();
-movieData();
-getData();
+async function init(){
+    await connectBackend();
+    await movieData();
+    await getData();
+}
+
+init();
