@@ -6,11 +6,11 @@ async function connectBackend(){
    "Content-Type":"application/json"
         },
         body:JSON.stringify({
-            firstname:"the",
-            lastname:"rock",
-            emailId:"therock124@gmail.com",
-            password:"therock@A124",
-            skills:["rich","hollywood","wwe"],
+            firstname:"bugatti",
+            lastname:"chiron",
+            emailId:"bugattiA12@gmail.com",
+            password:"bugatti@A124",
+            skills:["rich","money","power"],
             age:24,
         })
     });
