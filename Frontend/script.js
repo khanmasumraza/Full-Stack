@@ -6,11 +6,11 @@ async function connectBackend(){
    "Content-Type":"application/json"
         },
         body:JSON.stringify({
-            firstname:"bugatti",
-            lastname:"chiron",
-            emailId:"bugattiA12@gmail.com",
-            password:"bugatti@A124",
-            skills:["rich","money","power"],
+            firstname:"silicon",
+            lastname:"Valley",
+            emailId:"silicon12@gmail.com",
+            password:"silicon@A124",
+            skills:["tech hub","rich","hacker camp"],
             age:24,
         })
     });
@@ -53,7 +53,7 @@ async function getData(){
     try{
     const user= await fetch("http://localhost:8888/getuser")
  const data=await user.json();
- console.log(data)
+ console.log(data);
 
  document.getElementById("data").innerText=JSON.stringify(data,null,2)
     }
@@ -63,9 +63,9 @@ async function getData(){
 }
 
 async function init(){
-    await connectBackend();
-    await movieData();
-    await getData();
+    // await connectBackend();
+    // await movieData();
+    // await getData();
 }
 
 init();
