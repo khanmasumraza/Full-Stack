@@ -72,6 +72,7 @@ if(!passValid){
 
 // create jwt token
 const token= await jwt.sign({_id:user._id,emailId:user.emailId},"Masum@145")
+console.log(token);
 
 // craete cookie
 res.cookie("token",token,   {httpOnly: true},  { maxAge: 7 * 24 * 60 * 60 * 1000 } )
