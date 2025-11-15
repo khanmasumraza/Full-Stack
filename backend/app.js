@@ -7,7 +7,7 @@ const bcrypt=require("bcrypt")
 const cookieParser=require("cookie-parser")
 const jwt=require("jsonwebtoken")
 const userAuth=require("../middleware/userAuth")
-const connectionRequest=require("./models/connectionRequest")
+const ReqModel=require("./models/connectionRequest")
 
 require("./database")
 const app=express()
@@ -40,7 +40,6 @@ try{
    // bcrypt pass  
    
    const passwordHash= await bcrypt.hash(password,10)
-   console.log(passwordHash);
    
    const user=new userModel({
     firstname,lastname,emailId,password:passwordHash,skills,age
@@ -55,9 +54,9 @@ catch(err){
 }
 })
 
-app.post("/login",userAuth,async(req,res)=>{
+app.post("/login",async(req,res)=>{
     try{
-        console.log(req.body)
+
 const {password,emailId}=req.body;
 
 const user= await userModel.findOne({emailId})
@@ -71,16 +70,20 @@ if(!passValid){
 }
 
 // create jwt token
-const token= await jwt.sign({_id:user._id,emailId:user.emailId},"Masum@145")
-console.log(token);
+const token= await jwt.sign({_id:user._id,emailId:user.emailId,},"Masum@145")
 
 // craete cookie
-res.cookie("token",token,   {httpOnly: true},  { maxAge: 7 * 24 * 60 * 60 * 1000 } )
-    res.send("Login succesfull")
- 
+res.cookie("token", token, {
+  httpOnly: true,
+  maxAge: 7 * 24 * 60 * 60 * 1000
+});
+
+res.send("Login succesfully")
 }
+
 catch(err){
-    res.status(400).json({error:err.message})
+    res.status(400).json({error
+      :err.message})
 }
 })
 
@@ -90,68 +93,98 @@ app.post("/logout",async(req,res)=>{
 })
 
 app.get("/view",userAuth,(req,res)=>{
-res.send(" Welcome " + req.user.emailId)
+
+const user=req.user
+res.send(user)
 })
 
-app.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
-  try {
-    // 🔹 1. Get IDs & status
-    const fromUserId = req.user_id; // from logged-in user (middleware)
-    const toUserId = req.params.toUserId; // from URL
-    const status = req.params.status; // from URL
+app.post("/request/send/:status/:reciever", userAuth, async (req, res) => {
+  
+  try{
+    // Read 
+    const sender=req.user._id;
+    const reciever=req.params.reciever;
+const status=req.params.status
 
-    // 🔹 2. Validate allowed status values
-    const allowedStatus = ["ignored", "interested"];
-    if (!allowedStatus.includes(status)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid status type: " + status });
-    }
+// Validating status
+const validStatus=["intrested","ignored"]
+if(!validStatus.includes(status)){
+  throw new Error("Status is not valid")
+}
+const senderUser = await userModel.findById(sender);
 
-    // 🔹 3. Check if target user exists
-    const toUser = await User.findById(toUserId);
-    if (!toUser) {
-      return res.status(400).json({ message: "User not found!" });
-    }
+// Checking user is present in db or not
+const existingUser= await userModel.findById(reciever)
+if(!existingUser){
+  throw new Error("User not available in db");
+}
 
-    // 🔹 4. Check for existing connection request (both directions)
-    const existingConnectionRequest = await ConnectionRequest.findOne({
-      $or: [
-        { fromUserId, toUserId },
-        { fromUserId: toUserId, toUserId: fromUserId },
-      ],
-    });
+// Avoiding duplicate request
+const ConnectionExist= await ReqModel.findOne({
+  $or:[
+    {sender:sender,reciever:reciever},
+    {sender:reciever,reciever:sender}
+  ]
+})
+if(ConnectionExist){
+  throw new Error("Connection Already Exist");
+}
 
-    if (existingConnectionRequest) {
-      return res
-        .status(400)
-        .send({ message: "Connection request already exists" });
-    }
+// Avoiding to send req to own
+if(String(sender)===String(reciever)){
+  throw new Error("You can send req to yourself");
+}
 
-    // 🔹 5. Create and save new connection request
-    const connectionRequest = new ConnectionRequest({
-      fromUserId,
-      toUserId,
-      status,
-    });
+const connectionRequest= new ReqModel({
+  sender,reciever,status
+})
 
-    const data = await connectionRequest.save();
+const user= await connectionRequest.save();
 
-    // 🔹 6. Send response
-    res.json({
-      message: `${req.user.firstName} is ${status} in ${toUser.firstName}`,
-      data,
-    });
-  } catch (err) {
-    // 🔹 7. Handle errors
-    res.status(400).send("ERROR: " + err.message);
+res.send(`${senderUser.firstname} is ${status} in ${existingUser.firstname}`);
+
   }
-});
+  catch(err){
+    res.status(400).send("ERROR:"+ err.message)
+  }
+})
+
+app.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+try{
+
+ const loggedInUser=req.user;
+ const {status,requestId}=req.params
+
+ const validStatus=["accepted","rejected"]
+ if(!validStatus.includes(status)){
+  throw new Error("Status is not valid")
+ }
+const cleanRequestId = requestId.trim()
+
+ const connectionReq= await ReqModel.findOne({
+  _id:cleanRequestId,
+  reciever:loggedInUser._id,
+  status:"intrested"
+ })
+
+ if(!connectionReq){
+  return res.status(400).send("Connection Req not found");
+ }
+
+ connectionReq.status=status
+
+ const data=await connectionReq.save();
+
+ res.send("Connection req update")
+}
+catch(err){
+  res.status(400).send("ERROR:"+err.message)
+}
+})
 
 app.get("/getuser",async(req,res)=>{
     const find=await userModel.find()
     res.send(find)
-    console.log(find)
 })
 
 app.post("/movie",async(req,res)=>{
