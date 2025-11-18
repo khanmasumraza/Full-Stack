@@ -182,6 +182,47 @@ catch(err){
 }
 })
 
+app.get("/user/requests/received",userAuth,async (req,res)=>{
+
+  try{
+    const loggedInUserId=req.user
+
+     const connectionReq= await ReqModel.find({
+      reciever:loggedInUserId._id,
+      status:"intrested"
+    }).populate("sender", "firstname lastname ")
+    
+   return res.json({message:"Data fetched succesfully",data:connectionReq})
+  }
+  catch(err){
+    res.status(400).send("ERROR: "+err.message)
+  }
+
+})
+
+app.get("/user/connections",userAuth,async (req,res)=>{
+  try{
+const loggedInUserId=req.user
+
+const connectionRequest= await ReqModel.find({
+  $or:[
+    {sender:loggedInUserId._id,status:"accepted"},
+    {reciever:loggedInUserId._id,status:"accepted"}
+  ]
+}).populate("sender","firstname lastname photoUrl")
+
+  const data=  connectionRequest.map((row)=>{
+if(row.sender._id.toString()===loggedInUserId._id.toString()){
+  return row.reciever
+}
+return row.sender
+  });
+res.send(data)
+  }
+  catch(err){
+    res.status(400).send("ERROR:" + err.message)
+  }
+})
 app.get("/getuser",async(req,res)=>{
     const find=await userModel.find()
     res.send(find)
